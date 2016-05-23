@@ -81,15 +81,18 @@ def test_set_first_branch(n):
     assert n == {'a': {'b': {'c': 123}}, 'd': None}
 
 
-# def test_set_to_invalid_branch(n):
-    # with raises(KeyError):
-    #     n[('non_exist_branch', 'key1')] = None
+def test_set_to_invalid_branch(n):
+    n.clear()
+    n['a'] = None
+    with raises(KeyError):
+        n[('non_exist_branch', 'b')] = None
 
 
-# def test_set_to_non_False_value(n):
-    # n['deep_key'] = 'invalid_value'
-    # with raises(ValueError):
-    #     n[('deep_key', 'new_branch')] = None
+def test_set_to_non_false_value(n):
+    n.clear()
+    n['a'] = 123
+    with raises(ValueError):
+        n[('a', 'b')] = None
 
 
 # BRACKET STYLE
@@ -121,3 +124,39 @@ def test_get_with_partial_keys(n):
 
 
 # BACKSLASH STYLE
+def test_set_empty_dict_with_two_keys_with_slash(n):
+    n.clear()
+    n['a/b'] = 123
+    assert n == {'a': {'b': 123}}
+
+
+def test_set_empty_dict_with_three_keys_with_slash(n):
+    n.clear()
+    n['a/b/c'] = 123
+    assert n == {'a': {'b': {'c': 123}}}
+
+
+def test_set_non_empty_dict_with_slash(n):
+    n.clear()
+    n['a'] = {}
+    n['a']['b'] = {}
+    n['b']['c'] = None
+    n['c'] = 123
+    n['d'] = None
+
+    n['d/e'] = 456
+    assert n == {'a': {'b': {'c': 123}}, 'd': {'e': 456}}
+
+    n['a/b/c'] = 789
+    assert n == {'a': {'b': {'c': 789}}, 'd': {'e': 456}}
+
+
+def test_get_with_slash(n):
+    n.clear()
+    n['a'] = {}
+    n['a']['b'] = {}
+    n['b']['c'] = None
+    n['c'] = 123
+    n['d'] = None
+
+    assert n['a/b/c'] == 123
