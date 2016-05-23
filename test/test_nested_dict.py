@@ -80,29 +80,6 @@ def test_set_first_branch(n):
 
     assert n == {'a': {'b': {'c': 123}}, 'd': None}
 
-    # n[('branch', 'key1')] = 'first'
-    # assert n == {'branch': {'key1': 'first'}}
-    # assert n['branch']['key1'] == 'first'
-    #
-    # n[('branch', 'key2')] = 'val2'
-    # assert n == {'branch': {'key1': 'first', 'key2': 'val2'}}
-    # assert n['branch']['key2'] == 'val2'
-    #
-    # n[('branch', 'key1')] = 'val1'
-    # assert n['branch']['key1'] == 'val1'
-
-
-# def test_set_another_branch(n):
-    # n['brunch'] = None
-    # n[('brunch', 'key3')] = None
-    # assert n['branch'] == {'key1': 'val1', 'key2': 'val2'}
-    # assert n['brunch'] == {'key3': None}
-
-
-# def test_set_nested_branch(n):
-    # n[('key3', 'deep_key')] = None
-    # assert n['brunch'] == {'key3': {'deep_key': None}}
-
 
 # def test_set_to_invalid_branch(n):
     # with raises(KeyError):
