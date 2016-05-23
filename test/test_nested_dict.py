@@ -1,15 +1,15 @@
-from src.NestedDict import NestedDict
+from src import NestedDict as nd
 from pytest import fixture, raises
 
 
 @fixture(scope='module')
 def x():
-    return NestedDict()
+    return nd.NestedDict()
 
 
 @fixture(scope='module')
 def c():
-    val = NestedDict()
+    val = nd.NestedDict()
     val[123] = 'abc'
     val[456] = 'def'
     val[789] = 'ghi'
@@ -18,7 +18,7 @@ def c():
 
 @fixture(scope='module')
 def n():
-    return NestedDict()
+    return nd.NestedDict()
 
 
 def test_quick_assign(x):
