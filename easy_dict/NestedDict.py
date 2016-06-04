@@ -3,9 +3,12 @@ from collections.abc import MutableMapping
 
 class NestedDict(MutableMapping):
 
-    def __init__(self, root=True):
+    def __init__(self, initial_value=None, root=True):
         super().__init__()
-        self._val = {}
+        if initial_value is None:
+            self._val = {}
+        else:
+            self._val = initial_value
         self._found = False
         self._root = root
 
@@ -26,33 +29,38 @@ class NestedDict(MutableMapping):
                 if self._found:
                     self._found = False
                 else:
+                    # result = self[item] = type(self)()
                     raise KeyError
 
             return result
 
-        def _process_slash():
-            first_branch, *branches = item.split('/')
+        def _process_list():
+            first_branch, *branches = item
 
             nd = NestedDict(root=False)
-
             nd._val = self._val[first_branch]
-            result = nd['/'.join(branches)]
+            result = nd[branches] if len(branches) > 1 else nd[branches[0]]
 
             return result
 
-        if self.__isstring_containing_char(item, '/'):
-            return _process_slash()
+        if isinstance(item, list):
+            return _process_list()
+
+        elif self.__isstring_containing_char(item, '/'):
+            item = item.split('/')
+            return _process_list()
 
         elif item in self._val:
             self._found = True
             return self._val.__getitem__(item)
+
         else:
             return _look_deeper()
 
     def __setitem__(self, branch_key, value):
         self._found = False
 
-        def _process_tuple():
+        def _process_short_tuple():
             branch, key = branch_key
             nd = NestedDict(root=False)
             for k, v in self._val.items():
@@ -76,8 +84,8 @@ class NestedDict(MutableMapping):
                 else:
                     raise KeyError
 
-        def _process_slash():
-            first_branch, *branches = branch_key.split('/')
+        def _process_list():
+            first_branch, *branches = branch_key
 
             nd = NestedDict(root=False)
             self._val.setdefault(first_branch, {})
@@ -89,7 +97,7 @@ class NestedDict(MutableMapping):
 
             nd._val = self._val[first_branch]
             if len(branches) > 1:
-                nd['/'.join(branches)] = value
+                nd[branches] = value
             elif len(branches) == 1:
                 nd._val[branches[0]] = value
             else:
@@ -98,7 +106,7 @@ class NestedDict(MutableMapping):
         def _look_deeper():
             nd = NestedDict(root=False)
             for k, v in self._val.items():
-                if v and isinstance(v, dict):
+                if v and (isinstance(v, dict) or isinstance(v, NestedDict)):
                     nd._val = self._val[k]
                     nd[branch_key] = value
                     self._found = self._found or nd._found
@@ -110,10 +118,16 @@ class NestedDict(MutableMapping):
                     self._val.__setitem__(branch_key, value)
 
         if isinstance(branch_key, tuple):
-            _process_tuple()
+            # branch_key = list(branch_key)
+            # _process_list()
+            _process_short_tuple()
+
+        elif isinstance(branch_key, list):
+            _process_list()
 
         elif self.__isstring_containing_char(branch_key, '/'):
-            _process_slash()
+            branch_key = branch_key.split('/')
+            _process_list()
 
         elif branch_key in self._val:
             self._found = True

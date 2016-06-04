@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/SimpleNestedDict.iml" filepath="$PROJECT_DIR$/.idea/SimpleNestedDict.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/easy_dict.iml" filepath="$PROJECT_DIR$/.idea/easy_dict.iml" />
     </modules>
   </component>
 </project>

@@ -1,4 +1,4 @@
-from src import NestedDict as nd
+from easy_dict import NestedDict as nd
 from pytest import fixture, raises
 
 
@@ -38,6 +38,7 @@ def test_update(x):
 
 
 def test_setdefault(x):
+    # with raises(NotImplementedError):
     x.setdefault(key='y', default='z')
     x.setdefault(key='y', default='w')
 
@@ -50,6 +51,8 @@ def test_length(c):
 
 def test_del(x):
     del x[123]
+
+    # assert x == {'foo': 'bar', 'baz': 'qux', 'def': 456}
     with raises(KeyError):
         assert x[123]
 
@@ -100,7 +103,7 @@ def test_set_deep_keys_with_bracket(n):
     n.clear()
     n['a'] = {}
     n['a']['b'] = {}
-    n['b']['c'] = None
+    n['a']['b']['c'] = None
     n['c'] = 123
     n['d'] = None
 
@@ -136,13 +139,8 @@ def test_set_empty_dict_with_three_keys_with_slash(n):
     assert n == {'a': {'b': {'c': 123}}}
 
 
-def test_set_non_empty_dict_with_slash(n):
-    n.clear()
-    n['a'] = {}
-    n['a']['b'] = {}
-    n['b']['c'] = None
-    n['c'] = 123
-    n['d'] = None
+def test_set_non_empty_dict_with_slash():
+    n = nd.NestedDict({'a': {'b': {'c': 123}}, 'd': {'e': 456}})
 
     n['d/e'] = 456
     assert n == {'a': {'b': {'c': 123}}, 'd': {'e': 456}}
@@ -151,12 +149,36 @@ def test_set_non_empty_dict_with_slash(n):
     assert n == {'a': {'b': {'c': 789}}, 'd': {'e': 456}}
 
 
-def test_get_with_slash(n):
-    n.clear()
-    n['a'] = {}
-    n['a']['b'] = {}
-    n['b']['c'] = None
-    n['c'] = 123
-    n['d'] = None
+def test_get_with_slash():
+    n = nd.NestedDict({'a': {'b': {'c': 123}}, 'd': {'e': 456}})
 
     assert n['a/b/c'] == 123
+
+
+# LIST STYLE
+def test_set_empty_dict_with_two_keys_with_list(n):
+    n.clear()
+    n[['a', 'b']] = 123
+    assert n == {'a': {'b': 123}}
+
+
+def test_set_empty_dict_with_three_keys_with_list(n):
+    n.clear()
+    n[['a', 'b', 'c']] = 123
+    assert n == {'a': {'b': {'c': 123}}}
+
+
+def test_set_non_empty_dict_with_list():
+    n = nd.NestedDict({'a': {'b': {'c': 123}}, 'd': {'e': 456}})
+
+    n[['d', 'e']] = 456
+    assert n == {'a': {'b': {'c': 123}}, 'd': {'e': 456}}
+
+    n[['a', 'b', 'c']] = 789
+    assert n == {'a': {'b': {'c': 789}}, 'd': {'e': 456}}
+
+
+def test_get_with_list():
+    n = nd.NestedDict({'a': {'b': {'c': 123}}, 'd': {'e': 456}})
+
+    assert n[['a', 'b', 'c']] == 123
