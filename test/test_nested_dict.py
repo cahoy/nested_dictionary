@@ -117,68 +117,81 @@ def test_set_deep_keys_with_non_bracket(n):
         n['a']['b'] = None  # internally, executing __getitem__ then attempt to perform __setitem__
 
 
-def test_get_with_partial_keys(n):
-    n.clear()
-    n.update({'a': {'b': {'c': 123}}, 'd': None})
+def test_get_with_partial_keys():
+    k = nd.NestedDict({'a': {'b': {'c': 123}}, 'd': {'e': 456}})
 
-    assert n['a']['b']['c'] == 123
-    assert n['b']['c'] == 123
-    assert n['c'] == 123
-
-
-# BACKSLASH STYLE
-def test_set_empty_dict_with_two_keys_with_slash(n):
-    n.clear()
-    n['a/b'] = 123
-    assert n == {'a': {'b': 123}}
-
-
-def test_set_empty_dict_with_three_keys_with_slash(n):
-    n.clear()
-    n['a/b/c'] = 123
-    assert n == {'a': {'b': {'c': 123}}}
-
-
-def test_set_non_empty_dict_with_slash():
-    n = nd.NestedDict({'a': {'b': {'c': 123}}, 'd': {'e': 456}})
-
-    n['d/e'] = 456
-    assert n == {'a': {'b': {'c': 123}}, 'd': {'e': 456}}
-
-    n['a/b/c'] = 789
-    assert n == {'a': {'b': {'c': 789}}, 'd': {'e': 456}}
-
-
-def test_get_with_slash():
-    n = nd.NestedDict({'a': {'b': {'c': 123}}, 'd': {'e': 456}})
-
-    assert n['a/b/c'] == 123
+    assert k['a']['b']['c'] == 123
+    assert k['b']['c'] == 123
+    assert k['c'] == 123
 
 
 # LIST STYLE
-def test_set_empty_dict_with_two_keys_with_list(n):
-    n.clear()
-    n[['a', 'b']] = 123
-    assert n == {'a': {'b': 123}}
+# def test_set_empty_dict_with_two_keys_with_list(n):
+#     n.clear()
+#     n[['a', 'b']] = 123
+#     assert n == {'a': {'b': 123}}
 
 
-def test_set_empty_dict_with_three_keys_with_list(n):
-    n.clear()
-    n[['a', 'b', 'c']] = 123
-    assert n == {'a': {'b': {'c': 123}}}
+# def test_set_empty_dict_with_three_keys_with_list(n):
+#     n.clear()
+#     n[['a', 'b', 'c']] = 123
+#     assert n == {'a': {'b': {'c': 123}}}
+
+def test_get_with_list_from_root():
+    k = nd.NestedDict({'a': {'b': {'c': 123}}, 'd': {'e': 456}})
+
+    assert k[['a', 'b', 'c']] == 123
+    assert k[['b', 'c']] == 123
+    assert k[['c']] == 123
 
 
-def test_set_non_empty_dict_with_list():
-    n = nd.NestedDict({'a': {'b': {'c': 123}}, 'd': {'e': 456}})
+# def test_modify_dict_with_list_from_root(n):
+#     n = nd.NestedDict({'a': {'b': {'c': 123}}, 'd': {'e': 456}})
+#
+#     n[['d', 'e']] = 456
+#     assert n == {'a': {'b': {'c': 123}}, 'd': {'e': 456}}
+#
+#
+# def test_modify_dict_with_list_floating():
+#     n = nd.NestedDict({'a': {'b': {'c': 123}}, 'd': {'e': 456}})
+#
+#     n[['b', 'c']] = 789
+#     assert n == {'a': {'b': {'c': 789}}, 'd': {'e': 456}}
 
-    n[['d', 'e']] = 456
-    assert n == {'a': {'b': {'c': 123}}, 'd': {'e': 456}}
 
-    n[['a', 'b', 'c']] = 789
-    assert n == {'a': {'b': {'c': 789}}, 'd': {'e': 456}}
+# SLASH STYLE
 
+def test_get_with_slash_from_root():
+    k = nd.NestedDict({'a': {'b': {'c': 123}}, 'd': {'e': 456}})
 
-def test_get_with_list():
-    n = nd.NestedDict({'a': {'b': {'c': 123}}, 'd': {'e': 456}})
+    assert k['a/b/c'] == 123
+    assert k['b/c'] == 123
+    assert k['c'] == 123
 
-    assert n[['a', 'b', 'c']] == 123
+# def test_set_empty_dict_with_two_keys_with_slash(n):
+#     n.clear()
+#     n['a/b'] = 123
+#     assert n == {'a': {'b': 123}}
+#
+#
+# def test_set_empty_dict_with_three_keys_with_slash(n):
+#     n.clear()
+#     n['a/b/c'] = 123
+#     assert n == {'a': {'b': {'c': 123}}}
+#
+#
+# def test_set_non_empty_dict_with_slash():
+#     n = nd.NestedDict({'a': {'b': {'c': 123}}, 'd': {'e': 456}})
+#
+#     n['d/e'] = 456
+#     assert n == {'a': {'b': {'c': 123}}, 'd': {'e': 456}}
+#
+#     n['a/b/c'] = 789
+#     assert n == {'a': {'b': {'c': 789}}, 'd': {'e': 456}}
+#
+#
+# def test_get_with_slash():
+#     n = nd.NestedDict({'a': {'b': {'c': 123}}, 'd': {'e': 456}})
+#
+#     assert n['a/b/c'] == 123
+#

@@ -21,3 +21,19 @@ These assignments to nested dict object are valid.
 
     n['a/b/c'] = 123
     assert n == {'a': {'b': {'c': 123}}}
+
+### access nested content easily
+
+    k = nd.NestedDict({'a': {'b': {'c': 123}}, 'd': {'e': 456}})
+
+    assert k['a']['b']['c'] == 123
+    assert k['b']['c'] == 123
+    assert k['c'] == 123
+    
+    assert k[['a', 'b', 'c']] == 123
+    assert k[['b', 'c']] == 123
+    assert k[['c']] == 123
+    
+    assert k['a/b/c'] == 123
+    assert k['b/c'] == 123
+
