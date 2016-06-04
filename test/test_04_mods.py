@@ -33,7 +33,7 @@ def test_mod_with_floating_slash(n):
 
 
 def test_mod_with_floating_list(n):
-    n['b', 'c'] = 789
+    n[['b', 'c']] = 789
     assert n == {'a': {'b': {'c': 789}}, 'd': {'e': 456}, 'f': {'e': 789}}
 
 

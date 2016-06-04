@@ -1,5 +1,4 @@
 from collections.abc import MutableMapping
-import logging
 
 
 class NestedDict(MutableMapping):
@@ -38,12 +37,9 @@ class NestedDict(MutableMapping):
         def _process_list():
             if len(item) == 1:
                 return self[item[0]]
-
             trunk, *branches = item
             nd = NestedDict(self[trunk], root=False)
-            result = nd[branches] if len(branches) > 1 else nd[branches[0]]
-
-            return result
+            return nd[branches] if len(branches) > 1 else nd[branches[0]]
 
         if isinstance(item, list):
             return _process_list()
@@ -53,6 +49,7 @@ class NestedDict(MutableMapping):
             return _process_list()
 
         elif item in self._val:
+            # TODO getting multiple keys failed when there's one at root. should look deeper first.
             self._found = True
             return self._val.__getitem__(item)
 
@@ -62,61 +59,19 @@ class NestedDict(MutableMapping):
     def __setitem__(self, branch_key, value):
         self._found = False
 
-        def _process_short_tuple():
-            branch, key = branch_key
-            nd = NestedDict(root=False)
-            for k, v in self._val.items():
-                if v and isinstance(v, dict):
-                    nd._val = self._val[k]
-                    nd[branch_key] = value
-                    self._found = self._found or nd._found
-
-                if k == branch:
-                    self._found = True
-                    if not isinstance(self._val[branch], dict):
-                        if self._val[branch]:
-                            raise ValueError('value of this key is not a logical False')
-                        else:
-                            self._val[branch] = {}  # replace None, [], 0 and False to {}
-                    self._val[branch][key] = value
-
-            if self._root:
-                if self._found:
-                    self._found = False
-                else:
-                    raise KeyError
-
         def _process_list():
             *branches, tip = branch_key
 
             if self[tip]:
                 if isinstance(self[tip], tuple):
                     if isinstance(self[branches], tuple):
-                        raise KeyError('multiple keys={!r}'.format(tip))
+                        raise KeyError('ambiguous keys={!r}'.format(branch_key))
                     else:
                         self[branches][tip] = value
                 else:
                     self[tip] = value
             else:
                 raise KeyError('no key found={!r}'.format(tip))
-
-
-        def _process_set_default():
-            first_branch, *branches = branch_key
-
-            self._val.setdefault(first_branch, {})
-            if self._val[first_branch]:
-                pass
-            else:
-                self._val[first_branch] = {}
-
-            nd = NestedDict(self[first_branch], root=False)
-            if len(branches) > 1:
-                nd[branches] = value
-            elif len(branches) == 1:
-                nd._val[branches[0]] = value
-            else:
-                raise KeyError
 
         def _look_deeper():
             nd = NestedDict(root=False)
@@ -132,12 +87,7 @@ class NestedDict(MutableMapping):
                 else:
                     self._val.__setitem__(branch_key, value)
 
-        if isinstance(branch_key, tuple):
-            # branch_key = list(branch_key)
-            # _process_list()
-            _process_short_tuple()
-
-        elif isinstance(branch_key, list):
+        if isinstance(branch_key, list) or isinstance(branch_key, tuple):
             _process_list()
 
         elif self.__isstring_containing_char(branch_key, '/'):
@@ -161,10 +111,59 @@ class NestedDict(MutableMapping):
         return self._val.__len__()
 
     def __repr__(self):
-        return str(self._val)
+        return __name__ + str(self._val)
 
     def __call__(self):
         return self._val
+
+    def __contains__(self, item):
+        return self._val.__contains__(item)
+
+    def anchor(self, trunk, branch, value=None):
+        nd = NestedDict(root=False)
+        for k, v in self._val.items():
+            if v and isinstance(v, dict):
+                nd._val = self._val[k]
+                nd.anchor(trunk, branch, value)
+                self._found = self._found or nd._found
+
+            if k == trunk:
+                self._found = True
+                if not isinstance(self._val[trunk], dict):
+                    if self._val[trunk]:
+                        raise ValueError('value of this key is not a logical False')
+                    else:
+                        self._val[trunk] = {}  # replace None, [], 0 and False to {}
+                self._val[trunk][branch] = value
+
+        if self._root:
+            if self._found:
+                self._found = False
+            else:
+                raise KeyError
+
+    def setdefault(self, key, default=None):
+
+        if isinstance(key, list) or isinstance(key, tuple):
+            # TODO test this
+            trunk, *branches = key
+
+            self._val.setdefault(trunk, {})
+            if self._val[trunk]:
+                pass
+            else:
+                self._val[trunk] = default
+
+            nd = NestedDict(self[trunk], root=False)
+            if len(branches) > 1:
+                nd[branches] = default
+            elif len(branches) == 1:
+                nd._val[branches[0]] = default
+            else:
+                raise KeyError
+        else:
+            self._val.setdefault(key, default)
+
 
     @staticmethod
     def __isstring_containing_char(obj, char):
