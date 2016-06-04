@@ -16,12 +16,12 @@ class NestedDict(MutableMapping):
         self._found = False
 
         def _look_deeper():
-            result = []
+            result = tuple()
             for k, v in self._val.items():
                 if isinstance(v, dict):
                     n = NestedDict(self[k], root=False)
                     if n[item]:
-                        result.append(n[item])
+                        result += (n[item],)
                     self._found = self._found or n._found
 
             if self._root:
@@ -29,7 +29,7 @@ class NestedDict(MutableMapping):
                     self._found = False
                 else:
                     # result = self[item] = type(self)()
-                    raise KeyError
+                    raise KeyError(item)
 
             result = result[0] if len(result) == 1 else result
 
@@ -87,36 +87,29 @@ class NestedDict(MutableMapping):
                     raise KeyError
 
         def _process_list():
-            first_branch, *branches = branch_key
+            *branches, tip = branch_key
 
-            # self._val.setdefault(first_branch, {})
-            if self._val[first_branch]:
-                pass
+            if self[tip]:
+                if isinstance(self[tip], tuple):
+                    if isinstance(self[branches], tuple):
+                        raise KeyError('multiple keys={!r}'.format(tip))
+                    else:
+                        self[branches][tip] = value
+                else:
+                    self[tip] = value
             else:
-                self._val[first_branch] = {}
+                raise KeyError('no key found={!r}'.format(tip))
 
-            if first_branch in self:
-                self[first_branch] = value
-
-            nd = NestedDict(self[first_branch], root=False)
-            if len(branches) > 1:
-                nd[branches] = value
-            elif len(branches) == 1:
-                nd._val[branches[0]] = value
-            else:
-                raise KeyError
 
         def _process_set_default():
             first_branch, *branches = branch_key
 
-            # nd = NestedDict(root=False)
             self._val.setdefault(first_branch, {})
             if self._val[first_branch]:
                 pass
             else:
                 self._val[first_branch] = {}
 
-            # nd._val = self._val[first_branch]
             nd = NestedDict(self[first_branch], root=False)
             if len(branches) > 1:
                 nd[branches] = value
