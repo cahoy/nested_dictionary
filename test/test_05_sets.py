@@ -1,6 +1,6 @@
 from pytest import fixture
 
-import NestedDict as nd
+import easy_dict as nd
 
 
 @fixture()

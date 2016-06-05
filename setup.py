@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 from codecs import open
 from os import path
-import NestedDict
+import easy_dict
 
 here = path.abspath(path.dirname(__file__))
 
@@ -13,7 +13,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='easy_dict',
-    version=NestedDict.__version__,
+    version=easy_dict.__version__,
     description='Easier way of accessing & assigning information in a nested dictionary.',
     long_description=long_description,
     url='https://github.com/cahoy/NestedDictionary',
