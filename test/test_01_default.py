@@ -1,5 +1,6 @@
-from easy_dict import NestedDict as nd
 from pytest import fixture, raises
+
+import NestedDict as nd
 
 
 @fixture(scope='module')
