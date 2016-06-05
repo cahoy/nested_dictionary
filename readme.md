@@ -1,30 +1,31 @@
-Nested Dict
-===========
+#Nested Dict
+![build](https://img.shields.io/badge/build-passing-brightgreen.svg "passing") ![license](https://img.shields.io/badge/license-MIT%20License-blue.svg) ![tests](https://img.shields.io/badge/tests-passing-green.svg)
 
-#### drop-in replacement for the built-in dictionary
-These assignments to nested dict object are valid.
+### Installation
 
-    nd = NestedDict()
-    nd['foo'] = 'bar'
-    nd.update({'foo': 'bar'})
-    nd.setdefault(key='foo', default='bar')
+    pip install easy_dict
 
-#### if the key is a tuple, it trigger special function.
 
-    n['a'] = None
-    n[('a', 'b')] = None    # 'b' is a new key at 'a'
-    n[('b', 'c')] = 123     # 'c' is a new key at 'b'
+### Usage
+    from easy_dict import NestedDict
+    d = {'a': {'b': {'c': 123}}, 'd': {'e': 456}}
+    n = NestedDict(d)
 
-    assert n == {'a': {'b': {'c': 123}}}
+These following assignments to nested dict object are valid.
+
+    n = NestedDict()
+    n['foo'] = 'bar'
+    n.update({'foo': 'bar'})
+    n.setdefault(key='foo', default='bar')
     
-#### if the key is a string with <code> '/' </code>, trigger the nested function
+If the key is a string with <code> '/' </code>, trigger the nested function.
 
     n['a/b/c'] = 123
     assert n == {'a': {'b': {'c': 123}}}
 
-### access nested content easily
+Access nested content easily.
 
-    k = nd.NestedDict({'a': {'b': {'c': 123}}, 'd': {'e': 456}})
+    k = NestedDict({'a': {'b': {'c': 123}}, 'd': {'e': 456}})
 
     assert k['a']['b']['c'] == 123
     assert k['b']['c'] == 123
