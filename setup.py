@@ -11,6 +11,19 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
+classifiers = '''
+Intended Audience :: Developers
+Intended Audience :: Education
+Intended Audience :: Financial and Insurance Industry
+Intended Audience :: Information Technology
+Intended Audience :: Other Audience
+Intended Audience :: Science/Research
+License :: OSI Approved :: MIT License
+Programming Language :: Python :: 3.3
+Programming Language :: Python :: 3.4
+Programming Language :: Python :: 3.5
+'''
+
 setup(
     name='easy_dict',
     version=easy_dict.__version__,
@@ -22,22 +35,8 @@ setup(
     license='MIT',
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
-    classifiers=[
-        'Development Status :: 3 - Alpha',
-        'Intended Audience :: Developers',
-        'Intended Audience :: Information Technology',
-        'Intended Audience :: Manufacturing',
-        'Topic :: Database',
-        'Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)',
-        'Topic :: Scientific/Engineering :: Information Analysis',
-        'Topic :: Utilities',
-        'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-    ],
-
-    keywords='nested flat default dictionary',
+    classifiers=[x for x in classifiers.split('\n') if x],
+    keywords='easy simple nested flat default dictionary',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
