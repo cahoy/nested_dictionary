@@ -33,6 +33,8 @@ setup(
     author='Cahyo Primawidodo',
     author_email='cahyo.p@gmail.com',
     license='MIT',
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest'],
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[x for x in classifiers.split('\n') if x],
@@ -55,10 +57,10 @@ setup(
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
     # for example:
-    # $ pip install -e .[dev,test]
+    # $ pip install -e .[dev,tests]
     # extras_require={
     #     'dev': ['check-manifest'],
-    #     'test': ['coverage'],
+    #     'tests': ['coverage'],
     # },
 
     # If there are data files included in your packages that need to be

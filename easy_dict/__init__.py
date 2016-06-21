@@ -16,7 +16,8 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR TH
 THE SOFTWARE."""
 
 __author__ = 'cahyo primawidodo'
-__version__ = '0.1.0'
+__version__ = '0.1.1'
+
 
 from collections.abc import MutableMapping
 
@@ -165,7 +166,7 @@ class NestedDict(MutableMapping):
     def setdefault(self, key, default=None):
 
         if isinstance(key, list) or isinstance(key, tuple):
-            # TODO test this
+            # TODO tests this
             trunk, *branches = key
 
             self._val.setdefault(trunk, {})
@@ -191,3 +192,56 @@ class NestedDict(MutableMapping):
             if char in obj:
                 return True
         return False
+
+
+def asciify(d: dict, is_root=True, al=list, lvl=0):
+    if is_root:
+        al = []
+        lvl = 0
+
+    if d:
+        for k, v in d.items():
+            il = []
+            for i in range(lvl):
+                if i == lvl - 1:
+                    il.append('`-- ')
+                else:
+                    il.append('    ')
+            il.append(k)
+            al.append(il)
+
+            if d[k]:
+                lvl += 1
+                al = asciify(d[k], is_root=False, al=al, lvl=lvl)
+                lvl -= 1
+
+    if is_root:
+        empt_fill = '    '
+        vert_fill = '|   '
+        end__fill = '`-- '
+        plus_fill = '+-- '
+
+        replacement = set()
+        for each_line in reversed(al):
+
+            to_remove = []
+            for index in replacement:
+                if each_line[index] == empt_fill:
+                    each_line[index] = vert_fill
+                elif each_line[index] == end__fill:
+                    each_line[index] = plus_fill
+                else:
+                    to_remove.append(index)
+
+            while to_remove:
+                replacement.discard(to_remove.pop())
+
+            for i, e in enumerate(each_line):
+                if e == end__fill:
+                    replacement.add(i)
+
+        sl = [''.join(x) for x in al]
+
+        return sl
+    else:
+        return al
