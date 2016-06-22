@@ -8,7 +8,7 @@ import easy_dict
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
-with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+with open(path.join(here, 'long_desc.txt'), encoding='utf-8') as f:
     long_description = f.read()
 
 classifiers = '''
